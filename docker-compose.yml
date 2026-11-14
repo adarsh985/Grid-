@@ -1,0 +1,88 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-gridsense}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-gridsense_secret}
+      POSTGRES_DB: ${POSTGRES_DB:-gridsense}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-gridsense} -d ${POSTGRES_DB:-gridsense}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  ml-service:
+    build:
+      context: ./ml-service
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ml-service:
+        condition: service_healthy
+    environment:
+      PORT: 4000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-gridsense}:${POSTGRES_PASSWORD:-gridsense_secret}@postgres:5432/${POSTGRES_DB:-gridsense}
+      ML_SERVICE_URL: http://ml-service:8000
+      JWT_SECRET: ${JWT_SECRET:-change_me_in_production_gridsense_jwt_secret_2026}
+      INGEST_API_KEY: ${INGEST_API_KEY:-gridsense-ingest-dev-key}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:5173}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@gridsense.local}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-ChangeMe123!}
+      AUTO_SEED: "true"
+    ports:
+      - "4000:4000"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:4000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  frontend:
+    build:
+      context: ./frontend
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      BACKEND_PROXY_URL: http://backend:4000
+      ML_PROXY_URL: http://ml-service:8000
+      VITE_API_URL: ""
+      VITE_WS_URL: ""
+    ports:
+      - "5173:5173"
+
+  simulator:
+    build:
+      context: ./simulator
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      BACKEND_INGEST_URL: http://backend:4000/api/readings
+      INGEST_API_KEY: ${INGEST_API_KEY:-gridsense-ingest-dev-key}
+      SIMULATOR_METERS: ${SIMULATOR_METERS:-20}
+      SIMULATOR_INTERVAL_SEC: ${SIMULATOR_INTERVAL_SEC:-2.0}
+      SIMULATOR_FAULT_PROB: ${SIMULATOR_FAULT_PROB:-0.05}
+
+volumes:
+  pgdata:
