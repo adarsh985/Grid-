@@ -1,0 +1,35 @@
+# GridSense ML Service Ensemble & Rule Configuration
+ensemble:
+  isolation_forest_weight: 0.55
+  lstm_autoencoder_weight: 0.45
+  anomaly_threshold: 0.65
+
+lstm:
+  sequence_length: 60
+  hidden_dim: 24
+  latent_dim: 12
+  epochs: 8
+  batch_size: 256
+  learning_rate: 0.003
+  validation_percentile: 98.0
+
+isolation_forest:
+  n_estimators: 120
+  contamination: 0.03
+  random_state: 42
+
+hard_rules:
+  voltage_min_v: 207.0
+  voltage_max_v: 253.0
+  nema_imbalance_threshold: 0.10
+  overcurrent_ratio_threshold: 1.75
+  power_factor_min: 0.78
+  power_theft_drop_ratio: 0.30
+  power_theft_profile_drop_ratio: 0.28
+  power_theft_voltage_normal_min: 215.0
+  power_theft_voltage_normal_max: 245.0
+
+drift:
+  psi_warning_threshold: 0.20
+  num_bins: 10
+  recent_window_size: 500
