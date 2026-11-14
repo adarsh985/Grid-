@@ -1,0 +1,29 @@
+# Environment
+.env
+*.env.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+.venv-win/
+venv/
+.pytest_cache/
+*.egg-info/
+simulator/data/*.csv
+
+# Node / Frontend / Backend
+node_modules/
+dist/
+build/
+coverage/
+
+# OS / Editor / Agent artifacts
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+.gemini/
+step*.md
+capture_*.mjs
