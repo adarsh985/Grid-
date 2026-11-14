@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-family: "Space Grotesk", system-ui, sans-serif;
+    letter-spacing: -0.01em;
+  }
+
+  code, pre, .font-mono {
+    font-family: "IBM Plex Mono", monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Industrial HMI / Oscilloscope subtle graticule texture */
+.hmi-grid-bg {
+  background-color: #F2F3EE;
+  background-image:
+    linear-gradient(to right, rgba(17, 20, 28, 0.055) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(17, 20, 28, 0.055) 1px, transparent 1px),
+    linear-gradient(to right, rgba(17, 20, 28, 0.11) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(17, 20, 28, 0.11) 1px, transparent 1px);
+  background-size: 24px 24px, 24px 24px, 120px 120px, 120px 120px;
+}
+
+.dark .hmi-grid-bg {
+  background-color: #07090D;
+  background-image:
+    linear-gradient(to right, rgba(245, 158, 11, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(245, 158, 11, 0.035) 1px, transparent 1px),
+    linear-gradient(to right, rgba(125, 137, 156, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(125, 137, 156, 0.08) 1px, transparent 1px);
+  background-size: 24px 24px, 24px 24px, 120px 120px, 120px 120px;
+}
+
+/* Oscilloscope CRT trace glow */
+.trace-glow-amber {
+  filter: drop-shadow(0 0 4px rgba(245, 158, 11, 0.45));
+}
+.trace-glow-alert {
+  filter: drop-shadow(0 0 5px rgba(255, 77, 45, 0.6));
+}
+
+@keyframes valueFlash {
+  0% {
+    background-color: rgba(245, 158, 11, 0.28);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+.animate-value-flash {
+  animation: valueFlash 450ms ease-out;
+}
+
+@keyframes vignetteBreath {
+  0%, 100% {
+    opacity: 0.72;
+  }
+  50% {
+    opacity: 0.96;
+  }
+}
+
+.hmi-vignette {
+  animation: vignetteBreath 8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-value-flash {
+    animation: none;
+  }
+  .hmi-vignette {
+    animation: none;
+    opacity: 0.75;
+  }
+}
