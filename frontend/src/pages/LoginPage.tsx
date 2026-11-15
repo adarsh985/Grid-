@@ -29,12 +29,16 @@ export const LoginPage: React.FC = () => {
       await login(email.trim(), password);
       navigate('/', { replace: true });
     } catch (err) {
-      if (err instanceof ApiError && err.status < 500) {
-        setError(err.message);
+      if (err instanceof ApiError) {
+        if (err.status === 404) {
+          setError(
+            'Backend API not configured or unreachable (HTTP 404). Set VITE_API_URL to your deployed backend, or click Offline Mock Fallback below.',
+          );
+        } else {
+          setError(err.message);
+        }
       } else {
-        setError(
-          'Backend unreachable. Start the backend service (docker compose up) or click "Offline Mock Fallback (No Backend)" below.',
-        );
+        setError('Backend unreachable. Start the backend service or enter Offline Mock mode.');
       }
     } finally {
       setLoading(false);

@@ -7,6 +7,7 @@ import sys
 from typing import Any, Dict, List, Optional
 
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 ML_DIR = Path(__file__).resolve().parent
@@ -79,6 +80,15 @@ app = FastAPI(
     description="Real-time electrical fault and power-theft detection using Isolation Forest + LSTM Autoencoder + Hard Rules",
     version="1.0.0",
     lifespan=lifespan,
+)
+
+_cors_raw = os.getenv("CORS_ORIGIN", "*").strip()
+_cors_origins = [o.strip() for o in _cors_raw.split(",") if o.strip()] if _cors_raw else ["*"]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=_cors_origins,
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["*"],
 )
 
 

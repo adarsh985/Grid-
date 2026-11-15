@@ -19,7 +19,12 @@ export interface MlClient {
 }
 
 export class HttpMlClient implements MlClient {
-  constructor(private baseUrl: string, private timeoutMs = 15000) {}
+  private readonly baseUrl: string;
+
+  constructor(baseUrl: string, private timeoutMs = 15000) {
+    const trimmed = baseUrl.trim().replace(/\/$/, '');
+    this.baseUrl = /^https?:\/\//i.test(trimmed) ? trimmed : `http://${trimmed}`;
+  }
 
   private async call(path: string, init?: RequestInit) {
     const res = await fetch(this.baseUrl + path, { ...init, signal: AbortSignal.timeout(this.timeoutMs) });

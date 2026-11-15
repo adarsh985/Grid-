@@ -20,11 +20,9 @@ build/
 coverage/
 *.tsbuildinfo
 
-# OS / Editor / Agent artifacts
+# OS / Editor
 .DS_Store
 Thumbs.db
 .idea/
 .vscode/
 .gemini/
-step*.md
-capture_*.mjs

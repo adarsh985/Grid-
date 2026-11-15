@@ -1,8 +1,7 @@
 {
   "name": "gridsense-frontend",
   "private": true,
-  "version": "0.1.0",
-  "description": "GridSense SCADA-style React dashboard for real-time electrical fault and power-theft monitoring",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
