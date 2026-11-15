@@ -30,9 +30,9 @@ export const LoginPage: React.FC = () => {
       navigate('/', { replace: true });
     } catch (err) {
       if (err instanceof ApiError) {
-        if (err.status === 404) {
+        if (err.status === 404 || err.status === 405) {
           setError(
-            'Backend API not configured or unreachable (HTTP 404). Set VITE_API_URL to your deployed backend, or click Offline Mock Fallback below.',
+            `Backend API not configured or unreachable (HTTP ${err.status}). Set VITE_API_URL to your deployed backend and redeploy, or click Offline Mock Fallback below.`,
           );
         } else {
           setError(err.message);
